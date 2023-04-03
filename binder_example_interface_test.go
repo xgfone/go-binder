@@ -15,6 +15,7 @@
 package binder
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 )
@@ -69,20 +70,25 @@ func ExampleBinder_Interface() {
 	var S = struct {
 		Interface1 Setter
 		Interface2 Unmarshaler
-		Interface3 interface{} // Use to store any type value.
+
+		Interface3 error
+		Interface4 *error
+
+		Interface5 interface{} // Use to store any type value.
 		// Unmarshaler         // Do not use the anonymous interface.
 	}{
 		Interface1: &iface1, // For interface, must be set to a pointer
 		Interface2: &iface2, //  to an implementation.
 	}
 
+	iface3 := errors.New("test1")
+	iface4 := errors.New("test2")
 	maps := map[string]interface{}{
 		"Interface1": "123",
-		"Interface3": "any",
-		"Interface2": map[string]interface{}{
-			"Name": "Aaron",
-			"Age":  18,
-		},
+		"Interface2": map[string]interface{}{"Name": "Aaron", "Age": 18},
+		"Interface3": iface3,
+		"Interface4": iface4,
+		"Interface5": "any",
 	}
 
 	err := Bind(&S, maps)
@@ -94,9 +100,13 @@ func ExampleBinder_Interface() {
 	fmt.Printf("Interface1: %v\n", S.Interface1)
 	fmt.Printf("Interface2: %v\n", S.Interface2)
 	fmt.Printf("Interface3: %v\n", S.Interface3)
+	fmt.Printf("Interface4: %v\n", *S.Interface4)
+	fmt.Printf("Interface5: %v\n", S.Interface5)
 
 	// Output:
 	// Interface1: 123
 	// Interface2: Name=Aaron, Age=18
-	// Interface3: any
+	// Interface3: test1
+	// Interface4: test2
+	// Interface5: any
 }

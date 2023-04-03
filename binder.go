@@ -58,6 +58,8 @@ func BindWithTag(dstptr, src interface{}, tag string) error {
 type Hook func(dst reflect.Value, src interface{}) (newsrc interface{}, err error)
 
 // Binder is a common binder to bind a value to any.
+//
+// In general, Binder is used to transform a value between different types.
 type Binder struct {
 	// If true, convert src from slice/array, that's the first element,
 	// to a single value on demand by the bound value.
@@ -73,10 +75,11 @@ type Binder struct {
 	//
 	// If ignoring the field, return the empty string for the field name.
 	// For the tag value, it maybe contain the argument, just like
-	//   type Struct {
-	//       OnlyName   int `json:"fieldname"`
-	//       OnlyArg    int `json:",fieldarg"`
-	//       NameAndArg int `json:"fieldname,fieldarg"`
+	//   type S struct {
+	//       OnlyName    int `json:"fieldname"`
+	//       OnlyArg     int `json:",fieldarg"`
+	//       NameAndArg  int `json:"fieldname,fieldarg"`
+	//       NameAndArgs int `json:"fieldname,fieldarg1,fieldarg2"`
 	//       Ignore1     int `json:"-"`
 	//       Ignore2     int `json:"-,"`
 	//   }

@@ -492,3 +492,45 @@ func main() {
 	// Files[1].Filename=file2
 }
 ```
+
+### Bind HTTP Request Body
+```go
+func main() {
+	http.HandleFunc("/path", func(w http.ResponseWriter, r *http.Request) {
+		var body struct {
+			Field int `json:"field"`
+			// ...
+		}
+		err := binder.BodyDecoder.Decode(&body, r)
+		// ...
+	})
+}
+```
+
+### Bind HTTP Request Query
+```go
+func main() {
+	http.HandleFunc("/path", func(w http.ResponseWriter, r *http.Request) {
+		var query struct {
+			Field int `query:"field"`
+			// ...
+		}
+		err := binder.QueryDecoder.Decode(&query, r)
+		// ...
+	})
+}
+```
+
+### Bind HTTP Request Header
+```go
+func main() {
+	http.HandleFunc("/path", func(w http.ResponseWriter, r *http.Request) {
+		var header struct {
+			Field int `header:"x-field"` // or "X-Field"
+			// ...
+		}
+		err := binder.HeaderDecoder.Decode(&header, r)
+		// ...
+	})
+}
+```

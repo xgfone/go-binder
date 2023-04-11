@@ -23,6 +23,7 @@ import (
 	"github.com/xgfone/go-defaults"
 	"github.com/xgfone/go-defaults/assists"
 	"github.com/xgfone/go-structs"
+	"github.com/xgfone/go-validation"
 )
 
 // Predefine some decoders to decode a value,
@@ -64,9 +65,8 @@ var (
 )
 
 func init() {
-	defaults.StructValidator.Set(assists.StructValidateFunc(func(v interface{}) error {
-		return structs.Reflect(nil, v)
-	}))
+	defaults.RuleValidator.Set(assists.RuleValidateFunc(validation.Validate))
+	defaults.StructValidator.Set(assists.StructValidateFunc(structs.Reflect))
 }
 
 func init() {

@@ -2,7 +2,7 @@
 
 Provide a common binder to bind a value to any, for example, binding a struct to a map.
 
-For the struct, the package registers `github.com/xgfone/go-structs.Reflect` to reflect the fields of struct to validate the struct value and `github.com/xgfone/go-validation.Validate` to validate the struct field based on the built rule.
+For the struct, the package registers `github.com/xgfone/go-structs.Reflect` to reflect the fields of struct to validate the struct value. And, `github.com/xgfone/go-validation.Validate` may be used to validate each field value of the struct based on the built rule.
 
 
 ## Install

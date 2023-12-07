@@ -536,10 +536,8 @@ func (b binder) bindField(fieldValue reflect.Value, fieldType reflect.StructFiel
 	}
 
 	fieldKind := fieldValue.Kind()
-	if fieldKind == reflect.Struct {
-		if fieldType.Anonymous || arg == "squash" {
-			return b.bindStruct(fieldValue, src)
-		}
+	if fieldKind == reflect.Struct && (fieldType.Anonymous || arg == "squash") {
+		return b.bindStruct(fieldValue, src)
 	}
 
 	srcValue := reflect.ValueOf(src)

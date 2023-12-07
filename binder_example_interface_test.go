@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 // Int is the customized int.
@@ -52,12 +53,25 @@ type Struct struct {
 
 // UnmarshalBind implements the interface Unmarshaler.
 func (s *Struct) UnmarshalBind(src interface{}) (err error) {
-	if maps, ok := src.(map[string]interface{}); ok {
-		s.Name, _ = maps["Name"].(string)
-		err = s.Age.Set(maps["Age"])
-		return
+	switch v := src.(type) {
+	case string:
+		items := strings.Split(src.(string), ";")
+
+		var age int64
+		age, err = strconv.ParseInt(items[1], 10, 64)
+
+		s.Age = Int(age)
+		s.Name = items[0]
+
+	case map[string]interface{}:
+		s.Name, _ = v["Name"].(string)
+		err = s.Age.Set(v["Age"])
+
+	default:
+		err = fmt.Errorf("unsupport to convert %T to a struct", src)
 	}
-	return fmt.Errorf("unsupport to convert %T to a struct", src)
+
+	return
 }
 
 func (s Struct) String() string {
@@ -76,6 +90,8 @@ func ExampleBinder_Interface() {
 
 		Interface5 interface{} // Use to store any type value.
 		// Unmarshaler         // Do not use the anonymous interface.
+
+		Interface6 Struct
 	}{
 		Interface1: &iface1, // For interface, must be set to a pointer
 		Interface2: &iface2, //  to an implementation.
@@ -89,6 +105,7 @@ func ExampleBinder_Interface() {
 		"Interface3": iface3,
 		"Interface4": iface4,
 		"Interface5": "any",
+		"Interface6": "Xgfone;20",
 	}
 
 	err := Bind(&S, maps)
@@ -102,6 +119,7 @@ func ExampleBinder_Interface() {
 	fmt.Printf("Interface3: %v\n", S.Interface3)
 	fmt.Printf("Interface4: %v\n", *S.Interface4)
 	fmt.Printf("Interface5: %v\n", S.Interface5)
+	fmt.Printf("Interface6: %v\n", S.Interface6)
 
 	// Output:
 	// Interface1: 123
@@ -109,4 +127,5 @@ func ExampleBinder_Interface() {
 	// Interface3: test1
 	// Interface4: test2
 	// Interface5: any
+	// Interface6: Name=Xgfone, Age=20
 }

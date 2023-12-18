@@ -4,3 +4,7 @@ github.com/xgfone/go-defaults v0.13.0 h1:aJX/RJSI8yN6Xxn1b1NlFQyClwION2DM5X1NDz3
 github.com/xgfone/go-defaults v0.13.0/go.mod h1:4qxXP2vvK8n2csVwYmFbhbQAISq5s/2zYZE9CKYj/bw=
 github.com/xgfone/go-structs v0.2.1 h1:n9vVgvTXhgdykdc38oAIa2trutf56vgo2AbD+Y0m8M0=
 github.com/xgfone/go-structs v0.2.1/go.mod h1:mg50ogAqRnb1IWC9TyZ4vNqR/qacK0NMFfpy+k/rrsQ=
+github.com/xgfone/go-validation v0.3.0 h1:GJFZDX/zEq9tmLzjN6x2mpDWhMugwjhruNbpOyo9qfc=
+github.com/xgfone/go-validation v0.3.0/go.mod h1:oK9zWEMZ1F/miU9uhCW4TEvszTvc0IUxQT9MKHp0paA=
+github.com/xgfone/predicate v1.3.3 h1:eAlnN34a1Yw5u3aT427YmAj0ucpLfprx1Nnq+gKwLZ8=
+github.com/xgfone/predicate v1.3.3/go.mod h1:YWL+KK1KRUpxFkQybVQlyONTkYdNI6IpBYOmx/kF4l0=

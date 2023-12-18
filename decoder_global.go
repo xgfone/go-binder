@@ -23,6 +23,7 @@ import (
 	"github.com/xgfone/go-defaults"
 	"github.com/xgfone/go-defaults/assists"
 	"github.com/xgfone/go-structs"
+	"github.com/xgfone/go-validation"
 )
 
 // Predefine some decoders to decode a value,
@@ -64,7 +65,13 @@ var (
 )
 
 func init() {
-	defaults.StructValidator.Set(assists.StructValidateFunc(structs.Reflect))
+	if defaults.RuleValidator.Get() == nil {
+		defaults.RuleValidator.Set(assists.RuleValidateFunc(validation.Validate))
+	}
+	if defaults.StructValidator.Get() == nil {
+		defaults.StructValidator.Set(assists.StructValidateFunc(structs.Reflect))
+	}
+
 	DefaultMuxDecoder.Add("application/json", DecoderFunc(func(dst, src interface{}) error {
 		if req := src.(*http.Request); req.ContentLength > 0 {
 			return json.NewDecoder(req.Body).Decode(dst)

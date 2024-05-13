@@ -17,6 +17,9 @@ package binder
 import (
 	"fmt"
 	"time"
+
+	"github.com/xgfone/go-defaults"
+	"github.com/xgfone/go-defaults/assists"
 )
 
 func ExampleBinder_Struct() {
@@ -63,11 +66,11 @@ func ExampleBinder_Struct() {
 			Float2 Float
 		}
 
-		Ignore string `json:"-"`
+		Ignore string `key:"-"`
 		Squash struct {
 			Field1 int
 			Field2 int
-		} `json:",squash"`
+		} `key:",squash"`
 	}
 
 	maps := map[string]interface{}{
@@ -110,6 +113,8 @@ func ExampleBinder_Struct() {
 		"Field1": 51,
 		"Field2": 52,
 	}
+
+	defaults.StructFieldNameFunc.Set(assists.StructFieldNameFuncWithTags("key", "json"))
 
 	err := Bind(&S, maps)
 	if err != nil {

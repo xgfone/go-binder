@@ -22,7 +22,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/xgfone/go-cast"
 	"github.com/xgfone/go-defaults"
 	"github.com/xgfone/go-defaults/assists"
 	"github.com/xgfone/go-structs/field"
@@ -263,7 +262,7 @@ func (b binder) bind(kind reflect.Kind, value reflect.Value, src interface{}) (e
 }
 
 func (b binder) bindBool(dstValue reflect.Value, src interface{}) (err error) {
-	v, err := cast.ToBool(src)
+	v, err := defaults.ToBool(src)
 	if err == nil {
 		dstValue.SetBool(v)
 	}
@@ -271,7 +270,7 @@ func (b binder) bindBool(dstValue reflect.Value, src interface{}) (err error) {
 }
 
 func (b binder) bindInt(dstValue reflect.Value, src interface{}) (err error) {
-	v, err := cast.ToInt64(src)
+	v, err := defaults.ToInt64(src)
 	if err == nil {
 		dstValue.SetInt(v)
 	}
@@ -283,7 +282,7 @@ func (b binder) bindInt64(dstValue reflect.Value, src interface{}) (err error) {
 		return b.bindInt(dstValue, src)
 	}
 
-	v, err := cast.ToDuration(src)
+	v, err := defaults.ToDuration(src)
 	if err == nil {
 		dstValue.SetInt(int64(v))
 	}
@@ -291,7 +290,7 @@ func (b binder) bindInt64(dstValue reflect.Value, src interface{}) (err error) {
 }
 
 func (b binder) bindUint(dstValue reflect.Value, src interface{}) (err error) {
-	v, err := cast.ToUint64(src)
+	v, err := defaults.ToUint64(src)
 	if err == nil {
 		dstValue.SetUint(v)
 	}
@@ -299,7 +298,7 @@ func (b binder) bindUint(dstValue reflect.Value, src interface{}) (err error) {
 }
 
 func (b binder) bindFloat(dstValue reflect.Value, src interface{}) (err error) {
-	v, err := cast.ToFloat64(src)
+	v, err := defaults.ToFloat64(src)
 	if err == nil {
 		dstValue.SetFloat(v)
 	}
@@ -307,7 +306,7 @@ func (b binder) bindFloat(dstValue reflect.Value, src interface{}) (err error) {
 }
 
 func (b binder) bindString(dstValue reflect.Value, src interface{}) (err error) {
-	v, err := cast.ToString(src)
+	v, err := defaults.ToString(src)
 	if err == nil {
 		dstValue.SetString(v)
 	}
@@ -509,7 +508,7 @@ func (b binder) _bindMapIndex(dstmap reflect.Value, keyType, valueType reflect.T
 func (b binder) bindStruct(dstStructValue reflect.Value, src interface{}) (err error) {
 	if _, ok := dstStructValue.Interface().(time.Time); ok {
 		var v time.Time
-		if v, err = cast.ToTime(src); err == nil {
+		if v, err = defaults.ToTime(src); err == nil {
 			dstStructValue.Set(reflect.ValueOf(v))
 		}
 		return

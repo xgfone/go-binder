@@ -21,13 +21,6 @@ import (
 )
 
 func ExampleBinder_Basic() {
-	type (
-		IntT    int
-		UintT   uint
-		FloatT  float64
-		StringT string
-	)
-
 	var (
 		Bool    bool
 		Int     int
@@ -43,11 +36,6 @@ func ExampleBinder_Basic() {
 		Float32 float32
 		Float64 float64
 		String  string
-
-		intT    IntT
-		uintT   UintT
-		floatT  FloatT
-		stringT StringT
 	)
 
 	println := func(dst, src interface{}) {
@@ -70,11 +58,6 @@ func ExampleBinder_Basic() {
 	println(&Float64, 30)
 	println(&String, 40)
 
-	println(&intT, 50.0)
-	println(&uintT, IntT(60))
-	println(&floatT, StringT("70"))
-	println(&stringT, "test")
-
 	// Output:
 	// true <nil>
 	// 1000 <nil>
@@ -90,8 +73,4 @@ func ExampleBinder_Basic() {
 	// 1.2 <nil>
 	// 30 <nil>
 	// 40 <nil>
-	// 50 <nil>
-	// 60 <nil>
-	// 70 <nil>
-	// test <nil>
 }

@@ -19,6 +19,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+	"reflect"
 
 	"github.com/xgfone/go-defaults"
 	"github.com/xgfone/go-defaults/assists"
@@ -69,7 +70,12 @@ func init() {
 		defaults.RuleValidator.Set(assists.RuleValidateFunc(validation.Validate))
 	}
 	if defaults.StructValidator.Get() == nil {
-		defaults.StructValidator.Set(assists.StructValidateFunc(structs.Reflect))
+		defaults.StructValidator.Set(assists.StructValidateFunc(func(v any) error {
+			if v == nil {
+				return nil
+			}
+			return validate(reflect.ValueOf(v))
+		}))
 	}
 
 	DefaultMuxDecoder.Add("application/json", DecoderFunc(func(dst, src interface{}) error {
@@ -78,6 +84,27 @@ func init() {
 		}
 		return nil
 	}))
+}
+
+func validate(vf reflect.Value) (err error) {
+	switch vf.Kind() {
+	case reflect.Struct:
+		err = structs.ReflectValue(vf)
+
+	case reflect.Pointer:
+		if !vf.IsNil() {
+			err = validate(vf.Elem())
+		}
+
+	case reflect.Array, reflect.Slice:
+		for i, _len := 0, vf.Len(); i < _len; i++ {
+			if err = validate(vf.Index(i)); err != nil {
+				return
+			}
+		}
+	}
+
+	return
 }
 
 func init() {

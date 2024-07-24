@@ -141,7 +141,7 @@ func registerFormDecoder(ct string) {
 		}
 
 		err = BindStructToURLValues(dst, "form", req.Form)
-		if err == nil && len(req.MultipartForm.File) > 0 {
+		if err == nil && req.MultipartForm != nil && len(req.MultipartForm.File) > 0 {
 			err = BindStructToMultipartFileHeaders(dst, "form", req.MultipartForm.File)
 		}
 

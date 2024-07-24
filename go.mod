@@ -1,7 +1,7 @@
 module github.com/xgfone/go-binder
 
 require (
-	github.com/xgfone/go-defaults v0.16.0
+	github.com/xgfone/go-defaults v0.18.0
 	github.com/xgfone/go-structs v0.3.0
 	github.com/xgfone/go-validation v0.3.0
 )

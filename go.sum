@@ -1,5 +1,7 @@
 github.com/xgfone/go-defaults v0.16.0 h1:RRl01ib4EVCp6waARLvT642M2J6cuu1MVFVQ2slZI/4=
 github.com/xgfone/go-defaults v0.16.0/go.mod h1:RjyN5TK6hyaROkw2nyfchvCSCOch8rJ/zPO9nO4Y+EQ=
+github.com/xgfone/go-defaults v0.18.0 h1:jdxUx6x1qvTn/+Tzpmp/0C4Nf2bAvf2tUiCxDwEWCUc=
+github.com/xgfone/go-defaults v0.18.0/go.mod h1:RjyN5TK6hyaROkw2nyfchvCSCOch8rJ/zPO9nO4Y+EQ=
 github.com/xgfone/go-structs v0.3.0 h1:hkenbzCJTlgxjG8EUC/7VCunVWlr6+B0aq+MI9e60WU=
 github.com/xgfone/go-structs v0.3.0/go.mod h1:s/KzD4aJiG9NaBdLRUYI7r6bfyuUgpDOM7Sscsqpce4=
 github.com/xgfone/go-validation v0.3.0 h1:GJFZDX/zEq9tmLzjN6x2mpDWhMugwjhruNbpOyo9qfc=

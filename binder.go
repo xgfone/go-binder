@@ -151,8 +151,9 @@ func (b Binder) fieldNameGetter() func(reflect.StructField) (string, string) {
 
 func getStructFieldName(sf reflect.StructField) (name string, arg string) {
 	name, arg = field.GetTag(sf, "json")
-	if name == "-" {
-		name = ""
+	switch name {
+	case "", "-":
+		name = sf.Name
 	}
 	return
 }

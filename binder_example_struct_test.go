@@ -17,9 +17,6 @@ package binder
 import (
 	"fmt"
 	"time"
-
-	"github.com/xgfone/go-defaults"
-	"github.com/xgfone/go-defaults/assists"
 )
 
 func ExampleBinder_Struct() {
@@ -65,12 +62,6 @@ func ExampleBinder_Struct() {
 			Float1 float64
 			Float2 Float
 		}
-
-		Ignore string `key:"-"`
-		Squash struct {
-			Field1 int
-			Field2 int
-		} `key:",squash"`
 	}
 
 	maps := map[string]any{
@@ -108,13 +99,7 @@ func ExampleBinder_Struct() {
 			"String1": 47,   // int => string
 			"String2": 48,   // int => String
 		},
-
-		"Ignore": "xyz",
-		"Field1": 51,
-		"Field2": 52,
 	}
-
-	defaults.StructFieldNameFunc.Set(assists.StructFieldNameFuncWithTags("key", "json"))
 
 	err := Bind(&S, maps)
 	if err != nil {
@@ -149,9 +134,6 @@ func ExampleBinder_Struct() {
 	fmt.Printf("Embed.String2=%v\n", S.Embed.String2)
 	fmt.Printf("Embed.Float1=%v\n", S.Embed.Float1)
 	fmt.Printf("Embed.Float2=%v\n", S.Embed.Float2)
-	fmt.Printf("Squash.Field1=%v\n", S.Squash.Field1)
-	fmt.Printf("Squash.Field2=%v\n", S.Squash.Field2)
-	fmt.Printf("Ignore=%v\n", S.Ignore)
 
 	// Output:
 	// Bool=true
@@ -181,7 +163,4 @@ func ExampleBinder_Struct() {
 	// Embed.String2=48
 	// Embed.Float1=45
 	// Embed.Float2=46
-	// Squash.Field1=51
-	// Squash.Field2=52
-	// Ignore=
 }

@@ -22,8 +22,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/xgfone/go-defaults"
-	"github.com/xgfone/go-defaults/assists"
+	"github.com/xgfone/go-cast"
 	"github.com/xgfone/go-structs/field"
 )
 
@@ -49,7 +48,9 @@ func Bind(dstptr, src any) error {
 // which uses the given tag to try to get the field name.
 func BindWithTag(dstptr, src any, tag string) error {
 	binder := NewBinder()
-	binder.GetFieldName = assists.StructFieldNameFuncWithTags(tag)
+	binder.GetFieldName = func(sf reflect.StructField) (string, string) {
+		return field.GetTag(sf, tag)
+	}
 	return binder.Bind(dstptr, src)
 }
 
@@ -69,8 +70,6 @@ type Binder struct {
 	ConvertSingleToSlice bool
 
 	// GetFieldName is used to get the name and arg of the given field.
-	//
-	// If nil, use defaults.GetStructFieldName instead.
 	//
 	// If ignoring the field, return the empty string for the field name.
 	// For the tag value, it maybe contain the argument, just like
@@ -147,7 +146,15 @@ func (b Binder) fieldNameGetter() func(reflect.StructField) (string, string) {
 	if b.GetFieldName != nil {
 		return b.GetFieldName
 	}
-	return defaults.GetStructFieldName
+	return getStructFieldName
+}
+
+func getStructFieldName(sf reflect.StructField) (name string, arg string) {
+	name, arg = field.GetTag(sf, "json")
+	if name == "-" {
+		name = ""
+	}
+	return
 }
 
 type binder struct {
@@ -262,7 +269,7 @@ func (b binder) bind(kind reflect.Kind, value reflect.Value, src any) (err error
 }
 
 func (b binder) bindBool(dstValue reflect.Value, src any) (err error) {
-	v, err := defaults.ToBool(src)
+	v, err := cast.ToBool(src)
 	if err == nil {
 		dstValue.SetBool(v)
 	}
@@ -270,7 +277,7 @@ func (b binder) bindBool(dstValue reflect.Value, src any) (err error) {
 }
 
 func (b binder) bindInt(dstValue reflect.Value, src any) (err error) {
-	v, err := defaults.ToInt64(src)
+	v, err := cast.ToInt64(src)
 	if err == nil {
 		dstValue.SetInt(v)
 	}
@@ -282,7 +289,7 @@ func (b binder) bindInt64(dstValue reflect.Value, src any) (err error) {
 		return b.bindInt(dstValue, src)
 	}
 
-	v, err := defaults.ToDuration(src)
+	v, err := cast.ToDuration(src)
 	if err == nil {
 		dstValue.SetInt(int64(v))
 	}
@@ -290,7 +297,7 @@ func (b binder) bindInt64(dstValue reflect.Value, src any) (err error) {
 }
 
 func (b binder) bindUint(dstValue reflect.Value, src any) (err error) {
-	v, err := defaults.ToUint64(src)
+	v, err := cast.ToUint64(src)
 	if err == nil {
 		dstValue.SetUint(v)
 	}
@@ -298,7 +305,7 @@ func (b binder) bindUint(dstValue reflect.Value, src any) (err error) {
 }
 
 func (b binder) bindFloat(dstValue reflect.Value, src any) (err error) {
-	v, err := defaults.ToFloat64(src)
+	v, err := cast.ToFloat64(src)
 	if err == nil {
 		dstValue.SetFloat(v)
 	}
@@ -306,7 +313,7 @@ func (b binder) bindFloat(dstValue reflect.Value, src any) (err error) {
 }
 
 func (b binder) bindString(dstValue reflect.Value, src any) (err error) {
-	v, err := defaults.ToString(src)
+	v, err := cast.ToString(src)
 	if err == nil {
 		dstValue.SetString(v)
 	}
@@ -508,7 +515,7 @@ func (b binder) _bindMapIndex(dstmap reflect.Value, keyType, valueType reflect.T
 func (b binder) bindStruct(dstStructValue reflect.Value, src any) (err error) {
 	if _, ok := dstStructValue.Interface().(time.Time); ok {
 		var v time.Time
-		if v, err = defaults.ToTime(src); err == nil {
+		if v, err = cast.ToTime(src); err == nil {
 			dstStructValue.Set(reflect.ValueOf(v))
 		}
 		return

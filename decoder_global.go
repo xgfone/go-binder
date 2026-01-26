@@ -19,12 +19,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
-	"reflect"
-
-	"github.com/xgfone/go-defaults"
-	"github.com/xgfone/go-defaults/assists"
-	"github.com/xgfone/go-structs"
-	"github.com/xgfone/go-validation"
 )
 
 // Predefine some decoders to decode a value,
@@ -56,7 +50,8 @@ var (
 	//   DefaultMuxDecoder.Decode(dst, httpRequest).
 	DefaultMuxDecoder = NewMuxDecoder()
 
-	// It will use defaults.ValidateStruct to validate the struct value by default.
+	// It will use "github.com/xgfone/go-toolkit/validation.Validate"
+	// to validate the struct value by default.
 	DefaultStructValidationDecoder Decoder = StructValidationDecoder(nil)
 
 	// Some encapsulated http decoders, which can be used directly.
@@ -66,45 +61,12 @@ var (
 )
 
 func init() {
-	if defaults.RuleValidator.Get() == nil {
-		defaults.RuleValidator.Set(assists.RuleValidateFunc(validation.Validate))
-	}
-	if defaults.StructValidator.Get() == nil {
-		defaults.StructValidator.Set(assists.StructValidateFunc(func(v any) error {
-			if v == nil {
-				return nil
-			}
-			return validate(reflect.ValueOf(v))
-		}))
-	}
-
 	DefaultMuxDecoder.Add("application/json", DecoderFunc(func(dst, src any) error {
 		if req := src.(*http.Request); req.ContentLength > 0 {
 			return json.NewDecoder(req.Body).Decode(dst)
 		}
 		return nil
 	}))
-}
-
-func validate(vf reflect.Value) (err error) {
-	switch vf.Kind() {
-	case reflect.Struct:
-		err = structs.ReflectValue(vf)
-
-	case reflect.Pointer:
-		if !vf.IsNil() {
-			err = validate(vf.Elem())
-		}
-
-	case reflect.Array, reflect.Slice:
-		for i, _len := 0, vf.Len(); i < _len; i++ {
-			if err = validate(vf.Index(i)); err != nil {
-				return
-			}
-		}
-	}
-
-	return
 }
 
 func init() {

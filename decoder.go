@@ -31,14 +31,14 @@ var errMissingContentType = errors.New("missing the header Content-Type")
 // In general, Deocder is used to decode a byte stream to a type,
 // such as struct or map.
 type Decoder interface {
-	Decode(dst, src interface{}) error
+	Decode(dst, src any) error
 }
 
 // DecoderFunc is a function to decode the data src to dst.
-type DecoderFunc func(dst, src interface{}) error
+type DecoderFunc func(dst, src any) error
 
 // Decode implements the interface Decoder.
-func (f DecoderFunc) Decode(dst, src interface{}) error { return f(dst, src) }
+func (f DecoderFunc) Decode(dst, src any) error { return f(dst, src) }
 
 // ComposeDecoders composes a group of decoders, which will be called in turn,
 // to a Decoder.
@@ -47,7 +47,7 @@ func ComposeDecoders(decoders ...Decoder) Decoder {
 		panic("ComposeDecoders: missing decoders")
 	}
 
-	return DecoderFunc(func(dst, src interface{}) (err error) {
+	return DecoderFunc(func(dst, src any) (err error) {
 		for _, decoder := range decoders {
 			if err = decoder.Decode(dst, src); err != nil {
 				return
@@ -65,7 +65,7 @@ func StructValidationDecoder(validator assists.StructValidator) Decoder {
 		validate = validator.Validate
 	}
 
-	return DecoderFunc(func(dst, src interface{}) (err error) {
+	return DecoderFunc(func(dst, src any) (err error) {
 		return validate(dst)
 	})
 }
@@ -80,7 +80,7 @@ type MuxDecoder struct {
 	//   *http.Request: => Content-Type
 	//   interface{ DecodeType() string }
 	//   interface{ Type() string }
-	GetDecoder func(src interface{}, get func(string) Decoder) (Decoder, error)
+	GetDecoder func(src any, get func(string) Decoder) (Decoder, error)
 
 	decoders map[string]Decoder
 }
@@ -104,7 +104,7 @@ func (md *MuxDecoder) Del(dtype string) { delete(md.decoders, dtype) }
 func (md *MuxDecoder) Get(dtype string) Decoder { return md.decoders[dtype] }
 
 // Decode implements the interface Decoder.
-func (md *MuxDecoder) Decode(dst, src interface{}) (err error) {
+func (md *MuxDecoder) Decode(dst, src any) (err error) {
 	var decoder Decoder
 	if md.GetDecoder != nil {
 		decoder, err = md.GetDecoder(src, md.Get)
@@ -117,7 +117,7 @@ func (md *MuxDecoder) Decode(dst, src interface{}) (err error) {
 	return
 }
 
-func (md *MuxDecoder) getDecoder(src interface{}, get func(string) Decoder) (Decoder, error) {
+func (md *MuxDecoder) getDecoder(src any, get func(string) Decoder) (Decoder, error) {
 	switch req := src.(type) {
 	case *http.Request:
 		ct := getContentType(req.Header)

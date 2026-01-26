@@ -73,7 +73,7 @@ func ExampleBinder_Struct() {
 		} `key:",squash"`
 	}
 
-	maps := map[string]interface{}{
+	maps := map[string]any{
 		"Bool": true,
 
 		"Int":   10,
@@ -98,7 +98,7 @@ func ExampleBinder_Struct() {
 		"Time1":     1672531200,             // int(unix timestamp) => time.Time
 		"Time2":     "2023-02-01T00:00:00Z", // string(RFC3339) => time.Time
 
-		"Embed": map[string]interface{}{
+		"Embed": map[string]any{
 			"Int1":    "41", // string => int
 			"Int2":    "42", // string => Int
 			"Uint1":   "43", // string => uint

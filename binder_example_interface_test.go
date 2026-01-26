@@ -25,7 +25,7 @@ import (
 type Int int
 
 // Set implements the interface Setter.
-func (i *Int) Set(src interface{}) (err error) {
+func (i *Int) Set(src any) (err error) {
 	switch v := src.(type) {
 	case int:
 		*i = Int(v)
@@ -52,7 +52,7 @@ type Struct struct {
 }
 
 // UnmarshalBind implements the interface Unmarshaler.
-func (s *Struct) UnmarshalBind(src interface{}) (err error) {
+func (s *Struct) UnmarshalBind(src any) (err error) {
 	switch v := src.(type) {
 	case string:
 		items := strings.Split(src.(string), ";")
@@ -63,7 +63,7 @@ func (s *Struct) UnmarshalBind(src interface{}) (err error) {
 		s.Age = Int(age)
 		s.Name = items[0]
 
-	case map[string]interface{}:
+	case map[string]any:
 		s.Name, _ = v["Name"].(string)
 		err = s.Age.Set(v["Age"])
 
@@ -88,7 +88,7 @@ func ExampleBinder_Interface() {
 		Interface3 error
 		Interface4 *error
 
-		Interface5 interface{} // Use to store any type value.
+		Interface5 any // Use to store any type value.
 		// Unmarshaler         // Do not use the anonymous interface.
 
 		Interface6 Struct
@@ -99,9 +99,9 @@ func ExampleBinder_Interface() {
 
 	iface3 := errors.New("test1")
 	iface4 := errors.New("test2")
-	maps := map[string]interface{}{
+	maps := map[string]any{
 		"Interface1": "123",
-		"Interface2": map[string]interface{}{"Name": "Aaron", "Age": 18},
+		"Interface2": map[string]any{"Name": "Aaron", "Age": 18},
 		"Interface3": iface3,
 		"Interface4": iface4,
 		"Interface5": "any",

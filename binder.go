@@ -32,29 +32,29 @@ var DefaultBinder = NewBinder()
 
 // Unmarshaler is an interface to unmarshal itself from the parameter.
 type Unmarshaler interface {
-	UnmarshalBind(interface{}) error
+	UnmarshalBind(any) error
 }
 
 // Setter is an interface to set itself to the parameter.
 type Setter interface {
-	Set(interface{}) error
+	Set(any) error
 }
 
 // Bind uses DefaultBinder to bind dstptr to src.
-func Bind(dstptr, src interface{}) error {
+func Bind(dstptr, src any) error {
 	return DefaultBinder.Bind(dstptr, src)
 }
 
 // BindWithTag is used to bind dstptr to src,
 // which uses the given tag to try to get the field name.
-func BindWithTag(dstptr, src interface{}, tag string) error {
+func BindWithTag(dstptr, src any, tag string) error {
 	binder := NewBinder()
 	binder.GetFieldName = assists.StructFieldNameFuncWithTags(tag)
 	return binder.Bind(dstptr, src)
 }
 
 // Hook is used to intercept the binding operation.
-type Hook func(dst reflect.Value, src interface{}) (newsrc interface{}, err error)
+type Hook func(dst reflect.Value, src any) (newsrc any, err error)
 
 // Binder is a common binder to bind a value to any.
 //
@@ -139,7 +139,7 @@ func NewBinderWithHook(hook Hook) Binder {
 //   - Struct
 //
 // And any pointer to the types above, and the interfaces Unmarshaler and Setter.
-func (b Binder) Bind(dstptr, src interface{}) error {
+func (b Binder) Bind(dstptr, src any) error {
 	return binder{b.fieldNameGetter(), b}.Bind(dstptr, src)
 }
 
@@ -155,7 +155,7 @@ type binder struct {
 	Binder
 }
 
-func (b binder) Bind(dst, src interface{}) error {
+func (b binder) Bind(dst, src any) error {
 	dstValue, ok := dst.(reflect.Value)
 	if !ok {
 		dstValue = reflect.ValueOf(dst)
@@ -174,7 +174,7 @@ func (b binder) Bind(dst, src interface{}) error {
 	return b.bind(dstValue.Kind(), dstValue, src)
 }
 
-func (b binder) bind(kind reflect.Kind, value reflect.Value, src interface{}) (err error) {
+func (b binder) bind(kind reflect.Kind, value reflect.Value, src any) (err error) {
 	if src == nil {
 		return
 	}
@@ -261,7 +261,7 @@ func (b binder) bind(kind reflect.Kind, value reflect.Value, src interface{}) (e
 	return
 }
 
-func (b binder) bindBool(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindBool(dstValue reflect.Value, src any) (err error) {
 	v, err := defaults.ToBool(src)
 	if err == nil {
 		dstValue.SetBool(v)
@@ -269,7 +269,7 @@ func (b binder) bindBool(dstValue reflect.Value, src interface{}) (err error) {
 	return
 }
 
-func (b binder) bindInt(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindInt(dstValue reflect.Value, src any) (err error) {
 	v, err := defaults.ToInt64(src)
 	if err == nil {
 		dstValue.SetInt(v)
@@ -277,7 +277,7 @@ func (b binder) bindInt(dstValue reflect.Value, src interface{}) (err error) {
 	return
 }
 
-func (b binder) bindInt64(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindInt64(dstValue reflect.Value, src any) (err error) {
 	if _, ok := dstValue.Interface().(time.Duration); !ok {
 		return b.bindInt(dstValue, src)
 	}
@@ -289,7 +289,7 @@ func (b binder) bindInt64(dstValue reflect.Value, src interface{}) (err error) {
 	return
 }
 
-func (b binder) bindUint(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindUint(dstValue reflect.Value, src any) (err error) {
 	v, err := defaults.ToUint64(src)
 	if err == nil {
 		dstValue.SetUint(v)
@@ -297,7 +297,7 @@ func (b binder) bindUint(dstValue reflect.Value, src interface{}) (err error) {
 	return
 }
 
-func (b binder) bindFloat(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindFloat(dstValue reflect.Value, src any) (err error) {
 	v, err := defaults.ToFloat64(src)
 	if err == nil {
 		dstValue.SetFloat(v)
@@ -305,7 +305,7 @@ func (b binder) bindFloat(dstValue reflect.Value, src interface{}) (err error) {
 	return
 }
 
-func (b binder) bindString(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindString(dstValue reflect.Value, src any) (err error) {
 	v, err := defaults.ToString(src)
 	if err == nil {
 		dstValue.SetString(v)
@@ -313,7 +313,7 @@ func (b binder) bindString(dstValue reflect.Value, src interface{}) (err error) 
 	return
 }
 
-func (b binder) bindPointer(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindPointer(dstValue reflect.Value, src any) (err error) {
 	if dstValue.IsNil() {
 		dstValue.Set(reflect.New(dstValue.Type().Elem()))
 	}
@@ -321,7 +321,7 @@ func (b binder) bindPointer(dstValue reflect.Value, src interface{}) (err error)
 	return b.bind(dstValue.Kind(), dstValue, src)
 }
 
-func (b binder) bindInterface(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindInterface(dstValue reflect.Value, src any) (err error) {
 	if dstValue.IsValid() && dstValue.Elem().IsValid() { // Interface is set to a specific value.
 		elem := dstValue.Elem()
 		bindElem := elem
@@ -381,22 +381,22 @@ func (b binder) bindInterface(dstValue reflect.Value, src interface{}) (err erro
 	return
 }
 
-func (b binder) bindArray(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindArray(dstValue reflect.Value, src any) (err error) {
 	return b._bindList(dstValue, src, true)
 }
 
-func (b binder) bindSlice(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindSlice(dstValue reflect.Value, src any) (err error) {
 	return b._bindList(dstValue, src, false)
 }
 
-func (b binder) _bindList(dstValue reflect.Value, src interface{}, isArray bool) (err error) {
+func (b binder) _bindList(dstValue reflect.Value, src any, isArray bool) (err error) {
 	dstType := dstValue.Type()
 	ekind := dstType.Elem().Kind()
 
 	var _len int
 	var bind func(reflect.Value, int) error
 	switch vs := src.(type) {
-	case []interface{}:
+	case []any:
 		_len = len(vs)
 		bind = func(v reflect.Value, i int) error { return b.bind(ekind, v, vs[i]) }
 
@@ -443,14 +443,14 @@ func (b binder) _bindList(dstValue reflect.Value, src interface{}, isArray bool)
 	return
 }
 
-func (b binder) bindMap(dstValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindMap(dstValue reflect.Value, src any) (err error) {
 	dstType := dstValue.Type()
 	keyType := dstType.Key()
 	valueType := dstType.Elem()
 
 	var dstmaps reflect.Value
 	switch srcmaps := src.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		dstmaps = reflect.MakeMapWithSize(dstType, len(srcmaps))
 		for key, value := range srcmaps {
 			err = b._bindMapIndex(dstmaps, keyType, valueType, key, value)
@@ -488,7 +488,7 @@ func (b binder) bindMap(dstValue reflect.Value, src interface{}) (err error) {
 	return
 }
 
-func (b binder) _bindMapIndex(dstmap reflect.Value, keyType, valueType reflect.Type, key, value interface{}) (err error) {
+func (b binder) _bindMapIndex(dstmap reflect.Value, keyType, valueType reflect.Type, key, value any) (err error) {
 	srckey := reflect.New(keyType)
 	err = b.bind(keyType.Kind(), srckey.Elem(), key)
 	if err != nil {
@@ -505,7 +505,7 @@ func (b binder) _bindMapIndex(dstmap reflect.Value, keyType, valueType reflect.T
 	return
 }
 
-func (b binder) bindStruct(dstStructValue reflect.Value, src interface{}) (err error) {
+func (b binder) bindStruct(dstStructValue reflect.Value, src any) (err error) {
 	if _, ok := dstStructValue.Interface().(time.Time); ok {
 		var v time.Time
 		if v, err = defaults.ToTime(src); err == nil {
@@ -524,7 +524,7 @@ func (b binder) bindStruct(dstStructValue reflect.Value, src interface{}) (err e
 	return
 }
 
-func (b binder) bindField(fieldValue reflect.Value, fieldType reflect.StructField, src interface{}) (err error) {
+func (b binder) bindField(fieldValue reflect.Value, fieldType reflect.StructField, src any) (err error) {
 	if !fieldValue.CanSet() {
 		return
 	}

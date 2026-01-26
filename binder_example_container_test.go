@@ -22,7 +22,7 @@ import (
 func ExampleBinder_Container() {
 	type Ints []int
 	var S struct {
-		Maps    map[string]interface{} `json:"maps"`
+		Maps    map[string]any `json:"maps"`
 		Slices  []string               `json:"slices"`
 		Structs []struct {
 			Ints  Ints       `json:"ints"`
@@ -30,10 +30,10 @@ func ExampleBinder_Container() {
 		} `json:"structs"`
 	}
 
-	maps := map[string]interface{}{
+	maps := map[string]any{
 		"maps":   map[string]string{"k11": "v11", "k12": "v12"},
-		"slices": []interface{}{"a", "b", "c"},
-		"structs": []map[string]interface{}{
+		"slices": []any{"a", "b", "c"},
+		"structs": []map[string]any{
 			{
 				"ints": []string{"21", "22"},
 				"query": map[string][]string{

@@ -24,31 +24,31 @@ import (
 	"github.com/xgfone/go-structs/field"
 )
 
-// BindStructToMap binds the struct to map[string]interface{}.
+// BindStructToMap binds the struct to map[string]any.
 //
 // For the key name, it is case-sensitive.
-func BindStructToMap(structptr interface{}, tag string, data map[string]interface{}) (err error) {
+func BindStructToMap(structptr any, tag string, data map[string]any) (err error) {
 	return BindWithTag(structptr, data, tag)
 }
 
 // BindStructToStringMap binds the struct to map[string]string.
 //
 // For the key name, it is case-sensitive.
-func BindStructToStringMap(structptr interface{}, tag string, data map[string]string) (err error) {
+func BindStructToStringMap(structptr any, tag string, data map[string]string) (err error) {
 	return BindWithTag(structptr, data, tag)
 }
 
 // BindStructToURLValues binds the struct to url.Values.
 //
 // For the key name, it is case-sensitive.
-func BindStructToURLValues(structptr interface{}, tag string, data url.Values) error {
+func BindStructToURLValues(structptr any, tag string, data url.Values) error {
 	return BindWithTag(structptr, data, tag)
 }
 
 // BindStructToHTTPHeader binds the struct to http.Header.
 //
 // For the key name, it will use textproto.CanonicalMIMEHeaderKey(s) to normalize it.
-func BindStructToHTTPHeader(structptr interface{}, tag string, data http.Header) error {
+func BindStructToHTTPHeader(structptr any, tag string, data http.Header) error {
 	binder := NewBinder()
 	binder.GetFieldName = func(sf reflect.StructField) (name, arg string) {
 		switch name, arg = field.GetTag(sf, tag); name {
@@ -67,6 +67,6 @@ func BindStructToHTTPHeader(structptr interface{}, tag string, data http.Header)
 // BindStructToMultipartFileHeaders binds the struct to the multipart form file headers.
 //
 // For the key name, it is case-sensitive.
-func BindStructToMultipartFileHeaders(structptr interface{}, tag string, fhs map[string][]*multipart.FileHeader) error {
+func BindStructToMultipartFileHeaders(structptr any, tag string, fhs map[string][]*multipart.FileHeader) error {
 	return BindWithTag(structptr, fhs, tag)
 }

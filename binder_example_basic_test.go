@@ -38,7 +38,7 @@ func ExampleBinder_Basic() {
 		String  string
 	)
 
-	println := func(dst, src interface{}) {
+	println := func(dst, src any) {
 		err := Bind(dst, src)
 		fmt.Println(reflect.ValueOf(dst).Elem().Interface(), err)
 	}

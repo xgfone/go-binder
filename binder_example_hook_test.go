@@ -39,7 +39,7 @@ func ExampleBinder_Hook() {
 	//   2. We finish the binding in the hook.
 	//   3. Set ConvertSliceToSingle to true to enable the auto-conversion.
 	// In the exmaple, we use the first.
-	multiparthook := func(dst reflect.Value, src interface{}) (interface{}, error) {
+	multiparthook := func(dst reflect.Value, src any) (any, error) {
 		if _, ok := dst.Interface().(*multipart.FileHeader); !ok {
 			return src, nil // Let the binder continue to handle it.
 		}

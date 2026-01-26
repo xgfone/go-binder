@@ -4,16 +4,16 @@ Provide a common binder to bind a value to any, for example, binding a struct to
 
 For the struct, the package registers `github.com/xgfone/go-structs.Reflect` to reflect the fields of struct to validate the struct value. And, `github.com/xgfone/go-validation.Validate` may be used to validate each field value of the struct based on the built rule.
 
-
 ## Install
+
 ```shell
 $ go get -u github.com/xgfone/go-binder
 ```
 
-
 ## Example
 
 ### Bind the basic types
+
 ```go
 package main
 
@@ -55,7 +55,7 @@ func main() {
 		stringT StringT
 	)
 
-	println := func(dst, src interface{}) {
+	println := func(dst, src any) {
 		err := binder.Bind(dst, src)
 		fmt.Println(reflect.ValueOf(dst).Elem().Interface(), err)
 	}
@@ -103,6 +103,7 @@ func main() {
 ```
 
 ### Bind the struct
+
 ```go
 package main
 
@@ -164,7 +165,7 @@ func main() {
 		} `json:",squash"`
 	}
 
-	maps := map[string]interface{}{
+	maps := map[string]any{
 		"Bool": true,
 
 		"Int":   10,
@@ -189,7 +190,7 @@ func main() {
 		"Time1":     1672531200,             // int(unix timestamp) => time.Time
 		"Time2":     "2023-02-01T00:00:00Z", // string(RFC3339) => time.Time
 
-		"Embed": map[string]interface{}{
+		"Embed": map[string]any{
 			"Int1":    "41", // string => int
 			"Int2":    "42", // string => Int
 			"Uint1":   "43", // string => uint
@@ -277,6 +278,7 @@ func main() {
 ```
 
 ### Bind the containers
+
 ```go
 package main
 
@@ -290,7 +292,7 @@ import (
 func main() {
 	type Ints []int
 	var S struct {
-		Maps    map[string]interface{} `json:"maps"`
+		Maps    map[string]any `json:"maps"`
 		Slices  []string               `json:"slices"`
 		Structs []struct {
 			Ints  Ints       `json:"ints"`
@@ -298,10 +300,10 @@ func main() {
 		} `json:"structs"`
 	}
 
-	maps := map[string]interface{}{
+	maps := map[string]any{
 		"maps":   map[string]string{"k11": "v11", "k12": "v12"},
-		"slices": []interface{}{"a", "b", "c"},
-		"structs": []map[string]interface{}{
+		"slices": []any{"a", "b", "c"},
+		"structs": []map[string]any{
 			{
 				"ints": []string{"21", "22"},
 				"query": map[string][]string{
@@ -339,6 +341,7 @@ func main() {
 ```
 
 ### Bind the interfaces
+
 ```go
 package main
 
@@ -354,7 +357,7 @@ import (
 type Int int
 
 // Set implements the interface binder.Setter.
-func (i *Int) Set(src interface{}) (err error) {
+func (i *Int) Set(src any) (err error) {
 	switch v := src.(type) {
 	case int:
 		*i = Int(v)
@@ -381,8 +384,8 @@ type Struct struct {
 }
 
 // UnmarshalBind implements the interface binder.Unmarshaler.
-func (s *Struct) UnmarshalBind(src interface{}) (err error) {
-	if maps, ok := src.(map[string]interface{}); ok {
+func (s *Struct) UnmarshalBind(src any) (err error) {
+	if maps, ok := src.(map[string]any); ok {
 		s.Name, _ = maps["Name"].(string)
 		err = s.Age.Set(maps["Age"])
 		return
@@ -404,7 +407,7 @@ func main() {
 		Interface3 error
 		Interface4 *error
 
-		Interface5 interface{} // Use to store any type value.
+		Interface5 any // Use to store any type value.
 		// binder.Unmarshaler  // Do not use the anonymous interface.
 	}{
 		Interface1: &iface1, // For interface, must be set to a pointer
@@ -413,9 +416,9 @@ func main() {
 
 	iface3 := errors.New("test1")
 	iface4 := errors.New("test2")
-	maps := map[string]interface{}{
+	maps := map[string]any{
 		"Interface1": "123",
-		"Interface2": map[string]interface{}{"Name": "Aaron", "Age": 18},
+		"Interface2": map[string]any{"Name": "Aaron", "Age": 18},
 		"Interface3": iface3,
 		"Interface4": iface4,
 		"Interface5": "any",
@@ -443,6 +446,7 @@ func main() {
 ```
 
 ### Hook
+
 ```go
 package main
 
@@ -473,7 +477,7 @@ func main() {
 	//   2. We finish the binding in the hook.
 	//   3. Set ConvertSliceToSingle to true to enable the auto-conversion.
 	// In the exmaple, we use the first.
-	multiparthook := func(dst reflect.Value, src interface{}) (interface{}, error) {
+	multiparthook := func(dst reflect.Value, src any) (any, error) {
 		if _, ok := dst.Interface().(*multipart.FileHeader); !ok {
 			return src, nil // Let the binder continue to handle it.
 		}
@@ -506,6 +510,7 @@ func main() {
 ```
 
 ### Bind HTTP Request Body
+
 ```go
 func main() {
 	http.HandleFunc("/path", func(w http.ResponseWriter, r *http.Request) {
@@ -520,6 +525,7 @@ func main() {
 ```
 
 ### Bind HTTP Request Query
+
 ```go
 func main() {
 	http.HandleFunc("/path", func(w http.ResponseWriter, r *http.Request) {
@@ -534,6 +540,7 @@ func main() {
 ```
 
 ### Bind HTTP Request Header
+
 ```go
 func main() {
 	http.HandleFunc("/path", func(w http.ResponseWriter, r *http.Request) {

@@ -31,7 +31,7 @@ import (
 // such as body, query and header of the http request.
 var (
 	// It only supports to decode *http.Request with the tag "query" by default.
-	DefaultQueryDecoder Decoder = DecoderFunc(func(dst, src interface{}) error {
+	DefaultQueryDecoder Decoder = DecoderFunc(func(dst, src any) error {
 		if req, ok := src.(*http.Request); ok {
 			return BindStructToURLValues(dst, "query", req.URL.Query())
 		}
@@ -39,7 +39,7 @@ var (
 	})
 
 	// It only supports to decode *http.Request with the tag "header" by default.
-	DefaultHeaderDecoder Decoder = DecoderFunc(func(dst, src interface{}) error {
+	DefaultHeaderDecoder Decoder = DecoderFunc(func(dst, src any) error {
 		if req, ok := src.(*http.Request); ok {
 			return BindStructToHTTPHeader(dst, "header", req.Header)
 		}
@@ -78,7 +78,7 @@ func init() {
 		}))
 	}
 
-	DefaultMuxDecoder.Add("application/json", DecoderFunc(func(dst, src interface{}) error {
+	DefaultMuxDecoder.Add("application/json", DecoderFunc(func(dst, src any) error {
 		if req := src.(*http.Request); req.ContentLength > 0 {
 			return json.NewDecoder(req.Body).Decode(dst)
 		}
@@ -108,7 +108,7 @@ func validate(vf reflect.Value) (err error) {
 }
 
 func init() {
-	DefaultMuxDecoder.Add("application/xml", DecoderFunc(func(dst, src interface{}) error {
+	DefaultMuxDecoder.Add("application/xml", DecoderFunc(func(dst, src any) error {
 		if req := src.(*http.Request); req.ContentLength > 0 {
 			return xml.NewDecoder(req.Body).Decode(dst)
 		}
@@ -123,7 +123,7 @@ func init() {
 
 func registerFormDecoder(ct string) {
 	const maxMemory = 10 << 20
-	DefaultMuxDecoder.Add(ct, DecoderFunc(func(dst, src interface{}) (err error) {
+	DefaultMuxDecoder.Add(ct, DecoderFunc(func(dst, src any) (err error) {
 		req := src.(*http.Request)
 		switch ct := getContentType(req.Header); ct {
 		case "multipart/form-data":

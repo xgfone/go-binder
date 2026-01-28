@@ -49,7 +49,7 @@ func Bind(dstptr, src any) error {
 func BindWithTag(dstptr, src any, tag string) error {
 	binder := NewBinder()
 	binder.GetFieldName = func(sf reflect.StructField) (string, string) {
-		return field.GetTag(sf, tag)
+		return getStructFieldNameWithTag(sf, tag)
 	}
 	return binder.Bind(dstptr, src)
 }
@@ -150,10 +150,17 @@ func (b Binder) fieldNameGetter() func(reflect.StructField) (string, string) {
 }
 
 func getStructFieldName(sf reflect.StructField) (name string, arg string) {
-	name, arg = field.GetTag(sf, "json")
+	return getStructFieldNameWithTag(sf, "json")
+}
+
+func getStructFieldNameWithTag(sf reflect.StructField, tag string) (name string, arg string) {
+	name, arg = field.GetTag(sf, tag)
 	switch name {
-	case "", "-":
+	case "":
 		name = sf.Name
+
+	case "-":
+		name = ""
 	}
 	return
 }

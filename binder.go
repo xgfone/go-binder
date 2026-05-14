@@ -22,8 +22,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/xgfone/go-binder/internal/field"
 	"github.com/xgfone/go-cast"
-	"github.com/xgfone/go-structs/field"
 )
 
 // DefaultBinder is the default binder.

@@ -21,7 +21,7 @@ import (
 	"net/url"
 	"reflect"
 
-	"github.com/xgfone/go-structs/field"
+	"github.com/xgfone/go-binder/internal/field"
 )
 
 // BindStructToMap binds the struct to map[string]any.

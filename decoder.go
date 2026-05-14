@@ -15,7 +15,6 @@
 package binder
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -59,13 +58,13 @@ func ComposeDecoders(decoders ...Decoder) Decoder {
 
 // StructValidationDecoder returns a struct validation decoder,
 // which only validates whether the value dst is valid, not decodes any.
-func StructValidationDecoder(validate func(context.Context, any) error) Decoder {
+func StructValidationDecoder(validate func(any) error) Decoder {
 	if validate == nil {
 		validate = validation.Validate
 	}
 
 	return DecoderFunc(func(dst, src any) (err error) {
-		return validate(context.Background(), dst)
+		return validate(dst)
 	})
 }
 

@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/xgfone/go-toolkit/structx"
 	"github.com/xgfone/go-toolkit/validation"
 )
 
@@ -60,12 +61,19 @@ func ComposeDecoders(decoders ...Decoder) Decoder {
 // which only validates whether the value dst is valid, not decodes any.
 func StructValidationDecoder(validate func(any) error) Decoder {
 	if validate == nil {
-		validate = validation.Validate
+		validate = defaultValidate
 	}
 
 	return DecoderFunc(func(dst, src any) (err error) {
 		return validate(dst)
 	})
+}
+
+func defaultValidate(v any) (err error) {
+	if err = structx.SetDefaultAny(v); err != nil {
+		return
+	}
+	return validation.Validate(v)
 }
 
 // MuxDecoder is a multiplexer for kinds of Decoders.
